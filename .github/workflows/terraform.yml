@@ -22,6 +22,14 @@ jobs:
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.4.0
+    
+    - name: Validate Credentials Input
+      run: |
+        if [ -z "${{ secrets.AZURE_CREDENTIALS }}" ]; then
+          echo "AZURE_CREDENTIALS secret is not set or is empty!"
+          exit 1
+        fi
+      
 
     - name: Configure Azure credentials
       uses: azure/login@v2
