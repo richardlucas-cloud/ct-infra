@@ -40,12 +40,13 @@ jobs:
         enable-AzPSSession: true
         environment: azurecloud
 
-    - name: Azure CLI script
-      uses: azure/cli@v2
-      with:
-        azcliversion: latest
-        inlineScript: |
-          az account show
+    - name: Install Azure CLI
+      run: |
+        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+        az login --service-principal \
+          --username ${{ secrets.AZURE_CLIENT_ID }} \
+          --password ${{ secrets.AZURE_CLIENT_SECRET }} \
+          --tenant ${{ secrets.AZURE_TENANT_ID }}
 
     - name: Debug Backend Config
       run: |
@@ -53,15 +54,6 @@ jobs:
         echo "Storage Account: ${{ secrets.STORAGE_ACCOUNT_NAME }}"
         echo "Container Name: ${{ secrets.CONTAINER_NAME }}"
         echo "Key: ${{ secrets.ENVIRONMENT }}"
-
-    - name: Set Azure Environment Variables
-      run: |
-        echo "Setting Azure environment variables for Terraform."
-        export ARM_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}
-        export ARM_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }}
-        export ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}
-        export ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      
 
     - name: Initialize Terraform
       run: |

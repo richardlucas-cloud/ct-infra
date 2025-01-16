@@ -16,7 +16,7 @@ variable "resource_group_name" {
 }
 */
 
-variable "client_id" {
+/*variable "client_id" {
 }
 
 variable "client_secret" {
@@ -26,7 +26,7 @@ variable "tenant_id" {
 }
 
 variable "subscription_id" {
-}
+}*/
 
 #Infrasturtue variable
 variable "resource_groups" {
