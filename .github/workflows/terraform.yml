@@ -58,7 +58,7 @@ jobs:
       run: terraform plan -input=false -var-file="development.terraform.tfvars" -out=tfplan -lock=false
 
   deploy-development:
-    name: 'Deploy Infrastructure'
+    name: 'Deploy Development Infrastructure'
     needs: build-development  # Ensures the deploy job runs after build job
     runs-on: ubuntu-latest
     environment: development
@@ -87,7 +87,7 @@ jobs:
         # Apply the Terraform plan to deploy infrastructure
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply "tfplan" -auto-approve -input=false
+      run: terraform apply "tfplan"
 
   build-staging:
     name: 'Build Infrastructure for Staging'
@@ -135,7 +135,7 @@ jobs:
       run: terraform plan -input=false -var-file="staging.terraform.tfvars" -out=tfplan -lock=false
 
   deploy-staging:
-    name: 'Deploy Infrastructure'
+    name: 'Deploy Staging Infrastructure'
     needs: build-staging  # Ensures the deploy job runs after build job
     runs-on: ubuntu-latest
     environment: staging
@@ -164,7 +164,7 @@ jobs:
             # Apply the Terraform plan to deploy infrastructure
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply "tfplan" -auto-approve -input=false
+        run: terraform apply "tfplan"
 
   build-production:
     name: 'Build Infrastructure for Production'
@@ -213,7 +213,7 @@ jobs:
 
 
   deploy-production:
-    name: 'Deploy Infrastructure'
+    name: 'Deploy Production Infrastructure'
     needs: build-production  # Ensures the deploy job runs after build job
     runs-on: ubuntu-latest
     environment: production
@@ -242,4 +242,4 @@ jobs:
     # Apply the Terraform plan to deploy infrastructure
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply "tfplan" -auto-approve -input=false
+      run: terraform apply "tfplan"
