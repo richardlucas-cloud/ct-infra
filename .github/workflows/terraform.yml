@@ -99,14 +99,6 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         enable-AzPSSession: true
         environment: azurecloud
-
-    - name: Download Build Artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: tfplan
-
-    - name: List downloaded files
-      run: ls -al /home/runner/work/ct-infra/ct-infra
     
     - name: Initialize Terraform
       run: |
@@ -116,6 +108,17 @@ jobs:
           -backend-config="container_name=${{ env.TF_CONTAINER_NAME }}" \
           -backend-config="key=tfstate" \
           -backend-config="access_key=${{ env.TF_ACCESS_KEY }}"
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: terraform fmt -check
+
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: tfplan
+
+    - name: List downloaded files
+      run: ls -al /home/runner/work/ct-infra/ct-infra
 
       # Apply the Terraform plan to deploy infrastructure
     - name: Terraform Apply
