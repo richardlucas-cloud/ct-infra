@@ -83,14 +83,6 @@ jobs:
        shell: bash
     
     steps:
-
-    - name: Download Build Artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: tfplan
-
-    - name: List downloaded files
-      run: ls -al /home/runner/work/ct-infra/ct-infra
       
         # Checkout the repository to the GitHub Actions runner (if needed)
     - name: Checkout
@@ -100,8 +92,6 @@ jobs:
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
     
-    
-    
         # Authenticate with Azure using the service principal credentials
     - name: Configure Azure Credentials
       uses: azure/login@v2
@@ -109,6 +99,14 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         enable-AzPSSession: true
         environment: azurecloud
+
+    - name: Download Build Artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: tfplan
+
+    - name: List downloaded files
+      run: ls -al /home/runner/work/ct-infra/ct-infra
     
         # Apply the Terraform plan to deploy infrastructure
     - name: Terraform Apply
