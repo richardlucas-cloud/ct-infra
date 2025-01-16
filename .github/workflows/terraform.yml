@@ -71,7 +71,7 @@ jobs:
       run: terraform validate
 
     - name: Terraform Plan
-      run: terraform plan -out=tfplan
+      run: terraform plan -input=false -var-file="${{ secrets.ENVIRONMENT }}.terraform.tfvars" -out=tfplan -lock=false
 
     - name: Upload artifact
       uses: actions/upload-artifact@v3
