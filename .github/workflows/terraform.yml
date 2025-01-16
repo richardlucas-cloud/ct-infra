@@ -42,6 +42,14 @@ jobs:
         audience: api://AzureADTokenExchange
         auth-type: SERVICE_PRINCIPAL
 
+    - name: Debug Backend Config
+      run: |
+        echo "Resource Group: ${{ secrets.RESOURCE_GROUP_NAME }}"
+        echo "Storage Account: ${{ secrets.STORAGE_ACCOUNT_NAME }}"
+        echo "Container Name: ${{ secrets.CONTAINER_NAME }}"
+        echo "Key: ${{ secrets.ENVIRONMENT }}"
+      
+
     - name: Initialize Terraform
       run: terraform init -backend-config="resource_group_name=${{ secrets.RESOURCE_GROUP }}" \
                            -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT }}" \
