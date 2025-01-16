@@ -7,40 +7,38 @@ on:
   pull_request:
     branches:
       - main
+
 permissions:
   id-token: write
   contents: read
+
 jobs:
   build:
     environment: Dev
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout Code
       uses: actions/checkout@v3
 
     - name: Set up Terraform
       uses: hashicorp/setup-terraform@v2
       with:
         terraform_version: 1.4.0
-    
+
     - name: Validate Credentials Input
       run: |
         if [ -z "${{ secrets.AZURE_CREDENTIALS }}" ]; then
           echo "AZURE_CREDENTIALS secret is not set or is empty!"
           exit 1
         fi
-      
 
-    - name: Configure Azure credentials
+    - name: Configure Azure Credentials
       uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         enable-AzPSSession: true
         environment: azurecloud
-        allow-no-subscriptions: false
-        audience: api://AzureADTokenExchange
-        auth-type: SERVICE_PRINCIPAL
 
     - name: Debug Backend Config
       run: |
@@ -48,20 +46,21 @@ jobs:
         echo "Storage Account: ${{ secrets.STORAGE_ACCOUNT_NAME }}"
         echo "Container Name: ${{ secrets.CONTAINER_NAME }}"
         echo "Key: ${{ secrets.ENVIRONMENT }}"
-      
 
     - name: Initialize Terraform
-      run: terraform init -backend-config="resource_group_name=${{ secrets.RESOURCE_GROUP }}" \
-                           -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT }}" \
-                           -backend-config="container_name=${{ secrets.CONTAINER_NAME }}" \
-                           -backend-config="key=${{ secrets.ENVIRONMENT }}.tfstate"
+      run: |
+        terraform init \
+          -backend-config="resource_group_name=${{ secrets.RESOURCE_GROUP_NAME }}" \
+          -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" \
+          -backend-config="container_name=${{ secrets.CONTAINER_NAME }}" \
+          -backend-config="key=${{ secrets.ENVIRONMENT }}.tfstate"
 
-    - name: Verify Terraform State File
+    - name: Export Terraform State
       run: terraform show -json > statefile.json
 
     - name: Validate State Environment
       run: |
-        ENVIRONMENT=$(cat statefile.json | jq -r '.values.outputs.environment.value')
+        ENVIRONMENT=$(jq -r '.values.outputs.environment.value' statefile.json)
         if [ "$ENVIRONMENT" != "${{ secrets.ENVIRONMENT }}" ]; then
           echo "Error: State file environment ($ENVIRONMENT) does not match (${{ secrets.ENVIRONMENT }})."
           exit 1
@@ -71,32 +70,38 @@ jobs:
       run: terraform validate
 
     - name: Terraform Plan
-      run: terraform plan -input=false -var-file="${{ secrets.ENVIRONMENT }}.terraform.tfvars" -out=tfplan -lock=false
+      run: |
+        terraform plan \
+          -input=false \
+          -var-file="${{ secrets.ENVIRONMENT }}.terraform.tfvars" \
+          -out=tfplan \
+          -lock=false
 
-    - name: Upload artifact
+    - name: Upload Artifact
       uses: actions/upload-artifact@v3
-      with: 
+      with:
         name: tfplan
-        path: |
-            tfplan
-
+        path: tfplan
 
   Deploy:
     needs: build
     runs-on: ubuntu-latest
+
     steps:
-    - name: Get build artifacts
+    - name: Download Build Artifact
       uses: actions/download-artifact@v3
       with:
         name: tfplan
-    
+
     - name: Initialize Terraform
-      run: terraform init -backend-config="resource_group_name=${{ secrets.RESOURCE_GROUP }}" \
-                             -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT }}" \
-                             -backend-config="container_name=${{ secrets.CONTAINER_NAME }}" \
-                             -backend-config="key=${{ secrets.ENVIRONMENT }}.tfstate"
-                             
-    - name: Terraform Apply
+      run: |
+        terraform init \
+          -backend-config="resource_group_name=${{ secrets.RESOURCE_GROUP_NAME }}" \
+          -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" \
+          -backend-config="container_name=${{ secrets.CONTAINER_NAME }}" \
+          -backend-config="key=${{ secrets.ENVIRONMENT }}.tfstate"
+
+    - name: Apply Terraform Plan
       run: terraform apply -auto-approve tfplan
       env:
         TF_VAR_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
