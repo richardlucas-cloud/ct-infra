@@ -64,7 +64,7 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -var-file="development.terraform.tfvars" -out=tfplan -lock=true
+      run: terraform plan -input=false -var-file="development.terraform.tfvars" -out=development.tfplan -lock=true
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -128,10 +128,8 @@ jobs:
       # Apply the Terraform plan to deploy infrastructure
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/tfplan
+      run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/development.tfplan
     
-    - name: Cleanup Terraform Plan
-      run: rm -f /home/runner/work/ct-infra/ct-infra/tfplan
 
   build-staging:
     name: 'Build Infrastructure for Staging'
@@ -182,7 +180,7 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -var-file="staging.terraform.tfvars" -out=tfplan -lock=true
+      run: terraform plan -input=false -var-file="staging.terraform.tfvars" -out=staging.tfplan -lock=true
 
   deploy-staging:
     name: 'Deploy Staging Infrastructure'
@@ -238,10 +236,8 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/tfplan
+        run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/staging.tfplan
 
-      - name: Cleanup Terraform Plan
-        run: rm -f /home/runner/work/ct-infra/ct-infra/tfplan
 
   build-production:
     name: 'Build Infrastructure for Production'
@@ -292,7 +288,7 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -var-file="production.terraform.tfvars" -out=tfplan -lock=true
+      run: terraform plan -input=false -var-file="production.terraform.tfvars" -out=production.tfplan -lock=true
 
 
   deploy-production:
@@ -347,7 +343,4 @@ jobs:
           # Apply the Terraform plan to deploy infrastructure
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/tfplan
-
-    - name: Cleanup Terraform Plan
-      run: rm -f /home/runner/work/ct-infra/ct-infra/tfplan
+      run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/production.tfplan
