@@ -9,7 +9,7 @@ terraform {
     resource_group_name  = "tfstate-rg"
     storage_account_name = "tfstatestg0001"
     container_name       = "tfstate"
-    key                  = "${var.env}.tfstate"
+    key                  = "tfstate"
     tenant_id            = "b41b72d0-4e9f-4c26-8a69-f949f367c91d"
     subscription_id      = "2e8978a4-2ee8-445a-8287-ec90e39c778d"
   }
