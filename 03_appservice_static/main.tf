@@ -1,4 +1,4 @@
-resource "azurerm_static_site" "web" {
+resource "azurerm_static_web_app" "web" {
     name = var.name
     resource_group_name = var.resource_group_name
     location = var.resource_group_location
