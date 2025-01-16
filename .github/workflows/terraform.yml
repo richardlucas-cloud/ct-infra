@@ -108,7 +108,16 @@ jobs:
     - name: List downloaded files
       run: ls -al /home/runner/work/ct-infra/ct-infra
     
-        # Apply the Terraform plan to deploy infrastructure
+    - name: Initialize Terraform
+      run: |
+        terraform init \
+          -backend-config="resource_group_name=${{ env.TF_RESOURCE_GROUP }}" \
+          -backend-config="storage_account_name=${{ env.TF_STORAGE_ACCOUNT }}" \
+          -backend-config="container_name=${{ env.TF_CONTAINER_NAME }}" \
+          -backend-config="key=tfstate" \
+          -backend-config="access_key=${{ env.TF_ACCESS_KEY }}"
+
+      # Apply the Terraform plan to deploy infrastructure
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/tfplan
