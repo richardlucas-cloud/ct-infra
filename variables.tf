@@ -29,8 +29,8 @@ variable "storage" {
 
 variable "appservice" {
   type = map(object({
-    name     = string
-    rg_key   = string
+    name   = string
+    rg_key = string
     #plan_key = string
   }))
 
