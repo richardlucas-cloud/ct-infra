@@ -27,6 +27,8 @@ jobs:
       TF_STORAGE_ACCOUNT: ${{ secrets.TF_STORAGE_ACCOUNT }}
       TF_CONTAINER_NAME: ${{ secrets.TF_CONTAINER_NAME }}
       TF_ACCESS_KEY: ${{ secrets.TF_ACCESS_KEY }}
+      TF_CLIENT_ID: ${{ secrets.TF_CLIENT_ID }}
+      TF_TENENT_ID: ${{ secrets.TF_TENENT_ID }}
 
     steps:
     # Checkout the repository to the GitHub Actions runner
@@ -43,6 +45,9 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         enable-AzPSSession: true
+        allow-no-subscriptions: false
+        audience: api://AzureADTokenExchange
+        auth-type: SERVICE_PRINCIPAL
         environment: azurecloud
 
     # Initialize Terraform with backend configuration
