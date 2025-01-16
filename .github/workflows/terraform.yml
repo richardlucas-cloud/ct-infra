@@ -26,13 +26,6 @@ jobs:
       with:
         terraform_version: 1.4.0
 
-    - name: Validate Credentials Input
-      run: |
-        if [ -z "${{ secrets.AZURE_CREDENTIALS }}" ]; then
-          echo "AZURE_CREDENTIALS secret is not set or is empty!"
-          exit 1
-        fi
-
     - name: Configure Azure Credentials
       uses: azure/login@v2
       with:
@@ -40,21 +33,14 @@ jobs:
         enable-AzPSSession: true
         environment: azurecloud
 
-    - name: Set Azure Environment Variables
-      run: |
-        echo "Setting Azure environment variables for Terraform."
-        export ARM_CLIENT_ID=${{ secrets.AZURE_CLIENT_ID }}
-        export ARM_CLIENT_SECRET=${{ secrets.AZURE_CLIENT_SECRET }}
-        export ARM_TENANT_ID=${{ secrets.AZURE_TENANT_ID }}
-        export ARM_SUBSCRIPTION_ID=${{ secrets.AZURE_SUBSCRIPTION_ID }}
-      
     - name: Initialize Terraform
-      run: |
-        terraform init \
-          -backend-config="resource_group_name=${{ secrets.RESOURCE_GROUP_NAME }}" \
-          -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" \
-          -backend-config="container_name=${{ secrets.CONTAINER_NAME }}" \
-          -backend-config="key=${{ secrets.ENVIRONMENT }}.tfstate"
+      run: terraform init \
+       -backend-config="resource_group_name=${{ secrets.RESOURCE_GROUP_NAME }}" \
+       -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" \
+       -backend-config="client_id=${{ secrets.AZURE_CLIENT_ID }}" \
+       -backend-config="client_secret=${{ secrets.AZURE_CLIENT_SECRET }}" \
+       -backend-config="subscription_id=${{ secrets.AZURE_SUBSCRIPTION_ID }}" \
+       -backend-config="tenant_id=${{ secrets.AZURE_TENANT_ID }}"
 
     - name: Export Terraform State
       run: terraform show -json > statefile.json
@@ -84,7 +70,7 @@ jobs:
         name: tfplan
         path: tfplan
 
-  Deploy:
+  deploy:
     needs: build
     runs-on: ubuntu-latest
 
@@ -95,12 +81,11 @@ jobs:
         name: tfplan
 
     - name: Initialize Terraform
-      run: |
-        terraform init \
-          -backend-config="resource_group_name=${{ secrets.RESOURCE_GROUP_NAME }}" \
-          -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" \
-          -backend-config="container_name=${{ secrets.CONTAINER_NAME }}" \
-          -backend-config="key=${{ secrets.ENVIRONMENT }}.tfstate"
+      run: terraform init \
+       -backend-config="resource_group_name=${{ secrets.RESOURCE_GROUP_NAME }}" \
+       -backend-config="storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }}" \
+       -backend-config="container_name=tfstate" \
+       -backend-config="key=${{ secrets.ENVIRONMENT }}.tfstate"
 
     - name: Apply Terraform Plan
       run: terraform apply -auto-approve tfplan

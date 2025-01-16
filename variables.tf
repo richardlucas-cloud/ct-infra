@@ -1,33 +1,3 @@
-/*#backendtf variables
-variable "env" {
-  description = "Environment name (e.g., dev, qa, prod)"
-  type        = string
-  default     = "dev"
-}
-
-variable "storage_account_name" {
-  description = "statefile storagename name (e.g., dev, qa, prod)"
-  type        = string
-}
-
-variable "resource_group_name" {
-  description = "statefile storagename name (e.g., dev, qa, prod)"
-  type        = string
-}
-*/
-
-/*variable "client_id" {
-}
-
-variable "client_secret" {
-}
-
-variable "tenant_id" {
-}
-
-variable "subscription_id" {
-}*/
-
 #Infrasturtue variable
 variable "resource_groups" {
   type = map(object({

@@ -1,8 +1,3 @@
-#backend value
-/*env                  = "dev"
-storage_account_name = "tfstatestg0001"
-resource_group_name  = "tfstate-rg"*/
-
 #infra value
 resource_groups = {
   rg01 = {
