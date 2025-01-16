@@ -81,6 +81,11 @@ jobs:
     defaults:
       run:
        shell: bash
+    env:
+      TF_RESOURCE_GROUP: ${{ secrets.TF_RESOURCE_GROUP }}
+      TF_STORAGE_ACCOUNT: ${{ secrets.TF_STORAGE_ACCOUNT }}
+      TF_CONTAINER_NAME: ${{ secrets.TF_CONTAINER_NAME }}
+      TF_ACCESS_KEY: ${{ secrets.TF_ACCESS_KEY }}
     
     steps:
       
