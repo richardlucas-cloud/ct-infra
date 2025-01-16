@@ -16,16 +16,16 @@ variable "resource_group_name" {
 }
 */
 
-variable "ARM_CLIENT_ID" {
+variable "client_id" {
 }
 
-variable "AZURE_CLIENT_SECRET" {
+variable "client_secret" {
 }
 
-variable "AZURE_TENANT_ID" {
+variable "tenant_id" {
 }
 
-variable "AZURE_SUBSCRIPTION_ID" {
+variable "subscription_id" {
 }
 
 #Infrasturtue variable
