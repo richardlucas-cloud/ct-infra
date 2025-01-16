@@ -64,13 +64,13 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -var-file="development.terraform.tfvars" -out="development.tfplan" -lock=false
+      run: terraform plan -input=false -var-file="development.terraform.tfvars" -out="development.tfplan"
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: development
-        path: development
+        path: development.tfplan
 
   deploy-development:
     name: 'Deploy Development Infrastructure'
@@ -180,14 +180,14 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -var-file="staging.terraform.tfvars" -out="staging.tfplan" -lock=false
+      run: terraform plan -input=false -var-file="staging.terraform.tfvars" -out="staging.tfplan"
 
     
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: staging
-        path: staging
+        path: staging.tfplan
 
   deploy-staging:
     name: 'Deploy Staging Infrastructure'
@@ -295,14 +295,14 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -var-file="production.terraform.tfvars" -out="production.tfplan" -lock=false
+      run: terraform plan -input=false -var-file="production.terraform.tfvars" -out="production.tfplan"
 
     
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
         name: production
-        path: production
+        path: production.tfplan
 
 
   deploy-production:
