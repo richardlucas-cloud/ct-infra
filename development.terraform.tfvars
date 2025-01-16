@@ -26,7 +26,7 @@ storage = {
 
 appservice = {
   app1 = {
-    name   = "myaServicedev001"
+    name   = "mystatiserdev009"
     rg_key = "rg01"
     #plan_key = "plan1"
   },
