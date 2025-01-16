@@ -2,7 +2,7 @@
 resource_groups = {
   rg01 = {
     name     = "rgdev0009"
-    location = "West US"
+    location = "West Europe"
   }
 }
 
