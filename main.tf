@@ -32,7 +32,7 @@ module "appserviceplan" {
 
 # Create appservice
 module "web" {
-  source = "./03_appservice"
+  source = "./03_appservice_static"
   depends_on = [data.azurerm_resource_group.outputrg]
   for_each                = var.appservice
   name                    = each.value.name
