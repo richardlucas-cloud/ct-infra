@@ -13,7 +13,7 @@ variable "resource_group_location" {
   
 }
 
-variable "app_service_plan_id" {
+/*variable "app_service_plan_id" {
     type = string
   
-}
+}*/

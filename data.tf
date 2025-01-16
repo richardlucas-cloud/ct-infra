@@ -13,12 +13,12 @@ data "azurerm_storage_account" "outputstorage" {
   resource_group_name = data.azurerm_resource_group.outputrg[each.value.rg_key].name
 }
 
-data "azurerm_app_service_plan" "outputplan" {
+/*data "azurerm_app_service_plan" "outputplan" {
   depends_on          = [module.appserviceplan]
   for_each            = var.appserviceplan
   name                = each.value.name
   resource_group_name = data.azurerm_resource_group.outputrg[each.value.rg_key].name
-}
+}*/
 
 data "azurerm_app_service" "outputappservice" {
   depends_on          = [module.appservice]

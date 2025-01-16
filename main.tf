@@ -16,7 +16,7 @@ module "storage" {
   resource_group_location = data.azurerm_resource_group.outputrg[each.value.rg_key].location
 }
 
-# Create appserviceplan
+/*# Create appserviceplan
 module "appserviceplan" {
   source                  = "./02_appserviceplan"
   depends_on              = [data.azurerm_resource_group.outputrg]
@@ -28,16 +28,15 @@ module "appserviceplan" {
   kind                    = each.value.kind
   tier                    = each.value.tier
   size                    = each.value.size
-}
+}*/
 
 # Create appservice
-module "appservice" {
+module "web" {
   source = "./03_appservice"
-  depends_on = [data.azurerm_resource_group.outputrg,
-  data.azurerm_app_service_plan.outputplan]
+  depends_on = [data.azurerm_resource_group.outputrg]
   for_each                = var.appservice
   name                    = each.value.name
   resource_group_name     = data.azurerm_resource_group.outputrg[each.value.rg_key].name
   resource_group_location = data.azurerm_resource_group.outputrg[each.value.rg_key].location
-  app_service_plan_id     = data.azurerm_app_service_plan.outputplan[each.value.plan_key].id
+  #app_service_plan_id     = data.azurerm_app_service_plan.outputplan[each.value.plan_key].id
 }

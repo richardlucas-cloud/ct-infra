@@ -14,7 +14,7 @@ variable "storage" {
   }))
 }
 
-variable "appserviceplan" {
+/*variable "appserviceplan" {
   type = map(object({
     name     = string
     rg_key   = string
@@ -25,13 +25,13 @@ variable "appserviceplan" {
 
   }))
 
-}
+}*/
 
 variable "appservice" {
   type = map(object({
     name     = string
     rg_key   = string
-    plan_key = string
+    #plan_key = string
   }))
 
 }
