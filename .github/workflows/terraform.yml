@@ -2,14 +2,18 @@
 # On pull request events, this workflow will run `terraform init`, `terraform fmt`, and `terraform plan`. 
 # On push events to the "master" branch, `terraform apply` will be executed.
 
-name: 'Terraform'
+name: Terraform CI/CD Pipeline
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - main
   pull_request:
+    branches:
+      - main
 
 permissions:
+  id-token: write
   contents: read
 
 jobs:
