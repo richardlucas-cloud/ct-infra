@@ -64,13 +64,13 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -var-file="development.terraform.tfvars" -out="development.tfplan" -lock=true
+      run: terraform plan -input=false -var-file="development.terraform.tfvars" -out="development.tfplan" -lock=false
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: tfplan
-        path: tfplan
+        name: development
+        path: development
 
   deploy-development:
     name: 'Deploy Development Infrastructure'
@@ -120,7 +120,7 @@ jobs:
     - name: Download Build Artifact
       uses: actions/download-artifact@v4
       with:
-        name: tfplan
+        name: development
 
     - name: List downloaded files
       run: ls -al /home/runner/work/ct-infra/ct-infra
@@ -180,7 +180,14 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -var-file="staging.terraform.tfvars" -out="staging.tfplan" -lock=true
+      run: terraform plan -input=false -var-file="staging.terraform.tfvars" -out="staging.tfplan" -lock=false
+
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: staging
+        path: staging
 
   deploy-staging:
     name: 'Deploy Staging Infrastructure'
@@ -227,7 +234,7 @@ jobs:
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: tfplan
+          name: staging
       
       - name: List downloaded files
         run: ls -al /home/runner/work/ct-infra/ct-infra
@@ -288,7 +295,14 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -var-file="production.terraform.tfvars" -out="production.tfplan" -lock=true
+      run: terraform plan -input=false -var-file="production.terraform.tfvars" -out="production.tfplan" -lock=false
+
+    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: production
+        path: production
 
 
   deploy-production:
@@ -335,7 +349,7 @@ jobs:
     - name: Download Build Artifact
       uses: actions/download-artifact@v4
       with:
-        name: tfplan
+        name: production
     
     - name: List downloaded files
       run: ls -al /home/runner/work/ct-infra/ct-infra
