@@ -128,7 +128,7 @@ jobs:
       # Apply the Terraform plan to deploy infrastructure
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/development.tfplan
+      run: terraform apply -auto-approve "/home/runner/work/ct-infra/ct-infra/development.tfplan"
     
 
   build-staging:
@@ -236,7 +236,7 @@ jobs:
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-        run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/staging.tfplan
+        run: terraform apply -auto-approve "/home/runner/work/ct-infra/ct-infra/staging.tfplan"
 
 
   build-production:
@@ -343,4 +343,4 @@ jobs:
           # Apply the Terraform plan to deploy infrastructure
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/production.tfplan
+      run: terraform apply -auto-approve "/home/runner/work/ct-infra/ct-infra/production.tfplan"
