@@ -1,4 +1,4 @@
-output "azurerm_app_service" {
-    value = azurerm_app_service.appservice.default_site_hostname
+output "azurerm_static_site" {
+    value = azurerm_static_site.web
   
 }
