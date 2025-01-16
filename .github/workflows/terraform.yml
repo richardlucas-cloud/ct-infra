@@ -129,6 +129,9 @@ jobs:
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/tfplan
+    
+    - name: Cleanup Terraform Plan
+      run: rm -f tfplan
 
   build-staging:
     name: 'Build Infrastructure for Staging'
@@ -236,6 +239,9 @@ jobs:
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/tfplan
 
+      - name: Cleanup Terraform Plan
+        run: rm -f tfplan
+
   build-production:
     name: 'Build Infrastructure for Production'
     runs-on: ubuntu-latest
@@ -341,3 +347,6 @@ jobs:
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/tfplan
+
+    - name: Cleanup Terraform Plan
+      run: rm -f tfplan
