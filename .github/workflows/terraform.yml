@@ -13,10 +13,10 @@ permissions:
   contents: read
 
 jobs:
-  build:
-    name: 'Build Infrastructure'
+  build-development:
+    name: 'Build Infrastructure for Development'
     runs-on: ubuntu-latest
-    environment: production
+    environment: development  # Set environment for development
 
     defaults:
       run:
@@ -55,11 +55,166 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -var-file="dev.terraform.tfvars" -out=tfplan -lock=false
+      run: terraform plan -input=false -var-file="development.terraform.tfvars" -out=tfplan -lock=false
 
-  deploy:
+  deploy-development:
     name: 'Deploy Infrastructure'
-    needs: build  # Ensures the deploy job runs after build job
+    needs: build-development  # Ensures the deploy job runs after build job
+    runs-on: ubuntu-latest
+    environment: development
+    
+    defaults:
+      run:
+       shell: bash
+    
+    steps:
+        # Checkout the repository to the GitHub Actions runner (if needed)
+    - name: Checkout
+      uses: actions/checkout@v3
+    
+        # Install the latest version of Terraform CLI (if needed)
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+    
+        # Authenticate with Azure using the service principal credentials
+    - name: Configure Azure Credentials
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        enable-AzPSSession: true
+        environment: azurecloud
+    
+        # Apply the Terraform plan to deploy infrastructure
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      run: terraform apply "tfplan" -auto-approve -input=false
+
+  build-staging:
+    name: 'Build Infrastructure for Staging'
+    runs-on: ubuntu-latest
+    environment: staging  # Set environment for staging
+    needs: [build-development, deploy-development]  # Ensure this job runs after the development build job
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Install the latest version of Terraform CLI
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    # Authenticate with Azure using the service principal credentials
+    - name: Configure Azure Credentials
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        enable-AzPSSession: true
+        environment: azurecloud
+
+    # Initialize Terraform with backend configuration
+    - name: Initialize Terraform
+      run: |
+        terraform init \
+          -backend-config="resource_group_name=tfstate-rg" \
+          -backend-config="storage_account_name=tfstatestg0001" \
+          -backend-config="container_name=tfstate" \
+          -backend-config="key=tfstate" \
+          -backend-config="access_key=Ohp1apxD0et7jqwA3xOTtePXYUkqAjM7I1kX6h4HqkZCzqhz8Y3S/ff9DVXzaLtvmBjdpBjv21zN+AStV+WvoQ=="
+
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: terraform fmt -check
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      run: terraform plan -input=false -var-file="staging.terraform.tfvars" -out=tfplan -lock=false
+
+  deploy-staging:
+    name: 'Deploy Infrastructure'
+    needs: build-staging  # Ensures the deploy job runs after build job
+    runs-on: ubuntu-latest
+    environment: staging
+        
+    defaults:
+      run:
+        shell: bash
+        
+    steps:
+            # Checkout the repository to the GitHub Actions runner (if needed)
+      - name: Checkout
+        uses: actions/checkout@v3
+        
+            # Install the latest version of Terraform CLI (if needed)
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        
+            # Authenticate with Azure using the service principal credentials
+      - name: Configure Azure Credentials
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
+          environment: azurecloud
+        
+            # Apply the Terraform plan to deploy infrastructure
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply "tfplan" -auto-approve -input=false
+
+  build-production:
+    name: 'Build Infrastructure for Production'
+    runs-on: ubuntu-latest
+    environment: production  # Set environment for production
+    needs: [build-staging, deploy-staging]   # Ensure this job runs after the staging build job
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    # Install the latest version of Terraform CLI
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+
+    # Authenticate with Azure using the service principal credentials
+    - name: Configure Azure Credentials
+      uses: azure/login@v2
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        enable-AzPSSession: true
+        environment: azurecloud
+
+    # Initialize Terraform with backend configuration
+    - name: Initialize Terraform
+      run: |
+        terraform init \
+          -backend-config="resource_group_name=tfstate-rg" \
+          -backend-config="storage_account_name=tfstatestg0001" \
+          -backend-config="container_name=tfstate" \
+          -backend-config="key=tfstate" \
+          -backend-config="access_key=Ohp1apxD0et7jqwA3xOTtePXYUkqAjM7I1kX6h4HqkZCzqhz8Y3S/ff9DVXzaLtvmBjdpBjv21zN+AStV+WvoQ=="
+
+    # Checks that all Terraform configuration files adhere to a canonical format
+    - name: Terraform Format
+      run: terraform fmt -check
+
+    # Generates an execution plan for Terraform
+    - name: Terraform Plan
+      run: terraform plan -input=false -var-file="production.terraform.tfvars" -out=tfplan -lock=false
+
+
+  deploy-production:
+    name: 'Deploy Infrastructure'
+    needs: build-production  # Ensures the deploy job runs after build job
     runs-on: ubuntu-latest
     environment: production
 
