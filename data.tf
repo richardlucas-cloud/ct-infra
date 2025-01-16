@@ -21,7 +21,7 @@ data "azurerm_storage_account" "outputstorage" {
 }*/
 
 data "azurerm_app_service" "outputappservice" {
-  depends_on          = [module.appservice]
+  depends_on          = [module.web]
   for_each            = var.appservice
   name                = each.value.name
   resource_group_name = data.azurerm_resource_group.outputrg[each.value.rg_key].name
