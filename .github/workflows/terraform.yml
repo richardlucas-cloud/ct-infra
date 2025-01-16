@@ -111,7 +111,7 @@ jobs:
         # Apply the Terraform plan to deploy infrastructure
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-      run: terraform apply -auto-approve "/home/runner/work/ct-infra/ct-infra/tfplan"
+      run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/tfplan
 
   build-staging:
     name: 'Build Infrastructure for Staging'
