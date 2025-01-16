@@ -131,7 +131,7 @@ jobs:
       run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/tfplan
     
     - name: Cleanup Terraform Plan
-      run: rm -f tfplan
+      run: rm -f /home/runner/work/ct-infra/ct-infra/tfplan
 
   build-staging:
     name: 'Build Infrastructure for Staging'
@@ -240,7 +240,7 @@ jobs:
         run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/tfplan
 
       - name: Cleanup Terraform Plan
-        run: rm -f tfplan
+        run: rm -f /home/runner/work/ct-infra/ct-infra/tfplan
 
   build-production:
     name: 'Build Infrastructure for Production'
@@ -349,4 +349,4 @@ jobs:
       run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/tfplan
 
     - name: Cleanup Terraform Plan
-      run: rm -f tfplan
+      run: rm -f /home/runner/work/ct-infra/ct-infra/tfplan
