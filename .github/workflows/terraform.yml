@@ -60,7 +60,7 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan  -input=false -var-file="terraform.tfvars" -out=tfplan -lock=false                                                     
+      run: terraform plan  -input=false -var-file="dev.terraform.tfvars" -out=tfplan -lock=false                                                     
 
     # On push to "master", build or change infrastructure according to Terraform configuration files
     - name: Terraform Apply
