@@ -13,7 +13,7 @@ storage = {
   }
 }
 
-appserviceplan = {
+/*appserviceplan = {
   "plan1" = {
     name     = "appplandev-0010"
     rg_key   = "rg01"
@@ -22,13 +22,13 @@ appserviceplan = {
     tier     = "Basic"
     size     = "B1"
   }
-}
+}*/
 
 appservice = {
   app1 = {
     name     = "myaServicedev001"
     rg_key   = "rg01"
-    plan_key = "plan1"
+    #plan_key = "plan1"
   },
 }
 
