@@ -21,6 +21,12 @@ jobs:
     defaults:
       run:
         shell: bash
+    
+    env:
+      TF_RESOURCE_GROUP: ${{ secrets.TF_RESOURCE_GROUP }}
+      TF_STORAGE_ACCOUNT: ${{ secrets.TF_STORAGE_ACCOUNT }}
+      TF_CONTAINER_NAME: ${{ secrets.TF_CONTAINER_NAME }}
+      TF_ACCESS_KEY: ${{ secrets.TF_ACCESS_KEY }}
 
     steps:
     # Checkout the repository to the GitHub Actions runner
@@ -43,11 +49,11 @@ jobs:
     - name: Initialize Terraform
       run: |
         terraform init \
-          -backend-config="resource_group_name=tfstate-rg" \
-          -backend-config="storage_account_name=tfstatestg0001" \
-          -backend-config="container_name=tfstate" \
+          -backend-config="resource_group_name=${{ env.TF_RESOURCE_GROUP }}" \
+          -backend-config="storage_account_name=${{ env.TF_STORAGE_ACCOUNT }}" \
+          -backend-config="container_name=${{ env.TF_CONTAINER_NAME }}" \
           -backend-config="key=tfstate" \
-          -backend-config="access_key=Ohp1apxD0et7jqwA3xOTtePXYUkqAjM7I1kX6h4HqkZCzqhz8Y3S/ff9DVXzaLtvmBjdpBjv21zN+AStV+WvoQ=="
+          -backend-config="access_key=${{ env.TF_ACCESS_KEY }}"
 
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
