@@ -55,7 +55,7 @@ jobs:
           -backend-config="resource_group_name=${{ env.TF_RESOURCE_GROUP }}" \
           -backend-config="storage_account_name=${{ env.TF_STORAGE_ACCOUNT }}" \
           -backend-config="container_name=${{ env.TF_CONTAINER_NAME }}" \
-          -backend-config="key=tfstate" \
+          -backend-config="key=development.tfstate" \
           -backend-config="access_key=${{ env.TF_ACCESS_KEY }}"
 
     # Checks that all Terraform configuration files adhere to a canonical format
@@ -64,7 +64,7 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -var-file="development.terraform.tfvars" -out=tfplan -lock=false
+      run: terraform plan -input=false -var-file="development.terraform.tfvars" -out=tfplan -lock=true
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
@@ -111,7 +111,7 @@ jobs:
           -backend-config="resource_group_name=${{ env.TF_RESOURCE_GROUP }}" \
           -backend-config="storage_account_name=${{ env.TF_STORAGE_ACCOUNT }}" \
           -backend-config="container_name=${{ env.TF_CONTAINER_NAME }}" \
-          -backend-config="key=tfstate" \
+          -backend-config="key=development.tfstate" \
           -backend-config="access_key=${{ env.TF_ACCESS_KEY }}"
     # Checks that all Terraform configuration files adhere to a canonical format
     - name: Terraform Format
@@ -124,7 +124,7 @@ jobs:
 
     - name: List downloaded files
       run: ls -al /home/runner/work/ct-infra/ct-infra
-
+    
       # Apply the Terraform plan to deploy infrastructure
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
@@ -173,7 +173,7 @@ jobs:
           -backend-config="resource_group_name=${{ env.TF_RESOURCE_GROUP }}" \
           -backend-config="storage_account_name=${{ env.TF_STORAGE_ACCOUNT }}" \
           -backend-config="container_name=${{ env.TF_CONTAINER_NAME }}" \
-          -backend-config="key=tfstate" \
+          -backend-config="key=staging.tfstate" \
           -backend-config="access_key=${{ env.TF_ACCESS_KEY }}"
 
     # Checks that all Terraform configuration files adhere to a canonical format
@@ -182,7 +182,7 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -var-file="staging.terraform.tfvars" -out=tfplan -lock=false
+      run: terraform plan -input=false -var-file="staging.terraform.tfvars" -out=tfplan -lock=true
 
   deploy-staging:
     name: 'Deploy Staging Infrastructure'
@@ -223,7 +223,7 @@ jobs:
             -backend-config="resource_group_name=${{ env.TF_RESOURCE_GROUP }}" \
             -backend-config="storage_account_name=${{ env.TF_STORAGE_ACCOUNT }}" \
             -backend-config="container_name=${{ env.TF_CONTAINER_NAME }}" \
-            -backend-config="key=tfstate" \
+            -backend-config="key=staging.tfstate" \
             -backend-config="access_key=${{ env.TF_ACCESS_KEY }}"
         
       - name: Download Build Artifact
@@ -235,6 +235,7 @@ jobs:
         run: ls -al /home/runner/work/ct-infra/ct-infra
       
             # Apply the Terraform plan to deploy infrastructure
+
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: terraform apply -auto-approve /home/runner/work/ct-infra/ct-infra/tfplan
@@ -282,7 +283,7 @@ jobs:
           -backend-config="resource_group_name=${{ env.TF_RESOURCE_GROUP }}" \
           -backend-config="storage_account_name=${{ env.TF_STORAGE_ACCOUNT }}" \
           -backend-config="container_name=${{ env.TF_CONTAINER_NAME }}" \
-          -backend-config="key=tfstate" \
+          -backend-config="key=production.tfstate" \
           -backend-config="access_key=${{ env.TF_ACCESS_KEY }}"
 
     # Checks that all Terraform configuration files adhere to a canonical format
@@ -291,7 +292,7 @@ jobs:
 
     # Generates an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -input=false -var-file="production.terraform.tfvars" -out=tfplan -lock=false
+      run: terraform plan -input=false -var-file="production.terraform.tfvars" -out=tfplan -lock=true
 
 
   deploy-production:
@@ -332,7 +333,7 @@ jobs:
           -backend-config="resource_group_name=${{ env.TF_RESOURCE_GROUP }}" \
           -backend-config="storage_account_name=${{ env.TF_STORAGE_ACCOUNT }}" \
           -backend-config="container_name=${{ env.TF_CONTAINER_NAME }}" \
-          -backend-config="key=tfstate" \
+          -backend-config="key=production.tfstate" \
           -backend-config="access_key=${{ env.TF_ACCESS_KEY }}"
 
     - name: Download Build Artifact
