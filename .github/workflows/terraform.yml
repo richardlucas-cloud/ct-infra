@@ -12,7 +12,7 @@ permissions:
   contents: read
 jobs:
   build:
-    environment: dev
+    environment: Dev
     runs-on: ubuntu-latest
 
     steps:
