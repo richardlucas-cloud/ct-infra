@@ -1,18 +1,3 @@
-variable "resource_group_name" {
-  type    = string
-  default = "tfstate-rg"
-}
-
-variable "storage_account_name" {
-  type    = string
-  default = "tfstatestg0001"
-}
-
-variable "env" {
-  type    = string
-  default = "dev"  # Default environment (dev, qa, or prod)
-}
-
 terraform {
   backend "azurerm" {
     resource_group_name  = var.resource_group_name
