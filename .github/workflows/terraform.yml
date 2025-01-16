@@ -65,7 +65,6 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       run: terraform plan -input=false -var-file="development.terraform.tfvars" -out=tfplan -lock=false
-           ls -alh tfplan
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v3
