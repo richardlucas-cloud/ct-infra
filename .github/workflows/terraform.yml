@@ -19,7 +19,7 @@ jobs:
     strategy:
       matrix:
         environment: [development, staging, production]
-        
+
     defaults:
       run:
         shell: bash
@@ -69,6 +69,6 @@ jobs:
 
       - name: Apply Terraform (Manual Approval)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: terraform apply -input=false ${{ matrix.environment }}.tfplan
+        run: terraform apply -input=false ${{ matrix.environment }}.tfplan -lock=false
         env:
           TF_WORKSPACE: ${{ matrix.environment }}
