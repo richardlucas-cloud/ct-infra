@@ -9,7 +9,7 @@ on:
       - main
 
 env:
-  TF_VAR_example: dev
+  TF_VAR_example: development
 
 jobs:
   terraform:
@@ -18,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        environment: [dev, staging, prod]
+        environment: [development, staging, production]
     env:
       TF_RESOURCE_GROUP: ${{ secrets.TF_RESOURCE_GROUP }}
       TF_STORAGE_ACCOUNT: ${{ secrets.TF_STORAGE_ACCOUNT }}
@@ -47,7 +47,7 @@ jobs:
         run: terraform validate
 
       - name: Plan Terraform
-        run: terraform plan -out=${{ matrix.environment }}.tfplan
+        run: terraform plan -out=${{ matrix.environment }}.tfplan -var-file="${{ matrix.environment }}.terraform.tfvars" 
         env:
           TF_WORKSPACE: ${{ matrix.environment }}
 
