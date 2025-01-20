@@ -19,6 +19,11 @@ jobs:
     strategy:
       matrix:
         environment: [development, staging, production]
+        
+    defaults:
+      run:
+        shell: bash
+
     env:
       TF_RESOURCE_GROUP: ${{ secrets.TF_RESOURCE_GROUP }}
       TF_STORAGE_ACCOUNT: ${{ secrets.TF_STORAGE_ACCOUNT }}
@@ -33,6 +38,17 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.7
+      
+          # Authenticate with Azure using the service principal credentials
+      - name: Configure Azure Credentials
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          enable-AzPSSession: true
+          allow-no-subscriptions: false
+          audience: api://AzureADTokenExchange
+          auth-type: SERVICE_PRINCIPAL
+          environment: azurecloud
 
       - name: Initialize Terraform
         run: |
