@@ -47,7 +47,7 @@ jobs:
         run: terraform validate
 
       - name: Plan Terraform
-        run: terraform plan -out=${{ matrix.environment }}.tfplan -var-file="${{ matrix.environment }}.terraform.tfvars" 
+        run: terraform plan -out=${{ matrix.environment }}.tfplan -var-file="${{ matrix.environment }}.terraform.tfvars" -lock=false
         env:
           TF_WORKSPACE: ${{ matrix.environment }}
 
