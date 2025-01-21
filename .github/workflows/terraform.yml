@@ -16,6 +16,10 @@ jobs:
     strategy:
       matrix:
         environment: [development, staging, production]
+    
+    defaults:
+      run:
+       shell: bash
 
     env:
       TF_WORKSPACE: ${{ matrix.environment }}
@@ -41,6 +45,10 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           enable-AzPSSession: true
+          allow-no-subscriptions: false
+          audience: api://AzureADTokenExchange
+          auth-type: SERVICE_PRINCIPAL
+          environment: azurecloud
 
       # Initialize Terraform Backend
       - name: Initialize Terraform
