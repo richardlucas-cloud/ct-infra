@@ -47,7 +47,7 @@ jobs:
           terraform init \
               -backend-config="resource_group_name=${{ env.TF_RESOURCE_GROUP }}" \
               -backend-config="storage_account_name=${{ env.TF_STORAGE_ACCOUNT }}" \
-              -backend-config="container_name=${{ matrix.environment }} \
+              -backend-config="container_name=${{ matrix.environment }}" \
               -backend-config="key=${{ matrix.environment }}.tfstate" \
               -backend-config="access_key=${{ env.TF_ACCESS_KEY }}"
 
