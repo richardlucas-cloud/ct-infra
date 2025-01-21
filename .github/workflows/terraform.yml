@@ -22,10 +22,9 @@ jobs:
        shell: bash
 
     env:
-      TF_WORKSPACE: ${{ matrix.environment }}
       TF_RESOURCE_GROUP: ${{ secrets.TF_RESOURCE_GROUP }}
       TF_STORAGE_ACCOUNT: ${{ secrets.TF_STORAGE_ACCOUNT }}
-      #TF_CONTAINER_NAME: ${{ secrets.TF_CONTAINER_NAME }}
+      TF_CONTAINER_NAME: ${{ secrets.TF_CONTAINER_NAME }}
       TF_ACCESS_KEY: ${{ secrets.TF_ACCESS_KEY }}
 
     steps:
@@ -56,25 +55,10 @@ jobs:
           terraform init \
               -backend-config="resource_group_name=${{ env.TF_RESOURCE_GROUP }}" \
               -backend-config="storage_account_name=${{ env.TF_STORAGE_ACCOUNT }}" \
-              -backend-config="container_name=${{ env.TF_WORKSPACE }}" \
-              -backend-config="key=${{ env.TF_WORKSPACE }}.tfstate" \
+              -backend-config="container_name=${{ matrix.environment }}" \
+              -backend-config="key=${{ matrix.environment }}.tfstate" \
               -backend-config="access_key=${{ env.TF_ACCESS_KEY }}"
-
-      # Create or Select Workspace
-      - name: Create or Select Terraform Workspace
-        run: |
-          if ! terraform workspace list | grep -q "^${{ env.TF_WORKSPACE }}$"; then
-            terraform workspace new ${{ env.TF_WORKSPACE }}
-          else
-            terraform workspace select ${{ env.TF_WORKSPACE }}
-          fi
-        env:
-          TF_WORKSPACE: ${{ env.TF_WORKSPACE }}
     
-      
-          
-    
-
       # Terraform Validate
       - name: Validate Terraform
         run: terraform validate
@@ -83,10 +67,10 @@ jobs:
       - name: Plan Terraform
         run: |
           terraform plan \
-            -out=${{ env.TF_WORKSPACE }}.tfplan \
-            -var-file="${{ env.TF_WORKSPACE }}.terraform.tfvars"
+            -out=${{ matrix.environment }}.tfplan \
+            -var-file="${{ matrix.environment }}.terraform.tfvars"
 
       # Terraform Apply
       - name: Apply Terraform
         if: github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve ${{ env.TF_WORKSPACE }}.tfplan
+        run: terraform apply -auto-approve ${{ matrix.environment }}.tfplan
