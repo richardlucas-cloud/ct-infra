@@ -70,7 +70,15 @@ jobs:
             -out=${{ matrix.environment }}.tfplan \
             -var-file="${{ matrix.environment }}.terraform.tfvars"
 
-      # Terraform Apply
+      - name: Wait for approval
+        if: github.ref == 'refs/heads/main' && matrix.environment == 'production'
+        uses: trstringer/manual-approval@v1
+        with:
+           secret: ${{ secrets.USER_TOKEN }}
+           approvers: richardlucas-cloud
+          
+          
       - name: Apply Terraform
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && matrix.environment == 'production'
         run: terraform apply -auto-approve ${{ matrix.environment }}.tfplan
+          
