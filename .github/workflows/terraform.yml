@@ -63,8 +63,11 @@ jobs:
       # Create or Select Workspace
       - name: Create or Select Terraform Workspace
         run: |
-          terraform workspace list | grep -q "^${{ env.TF_WORKSPACE }}$" || terraform workspace new ${{ env.TF_WORKSPACE }}
+          if ! terraform workspace list | grep -q "^${{ env.TF_WORKSPACE }}$"; then
+           terraform workspace new ${{ env.TF_WORKSPACE }}
+          fi
           terraform workspace select ${{ env.TF_WORKSPACE }}
+    
 
       # Terraform Validate
       - name: Validate Terraform
