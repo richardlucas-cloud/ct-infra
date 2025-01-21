@@ -65,9 +65,12 @@ jobs:
         run: |
           if ! terraform workspace list | grep -q "^${{ env.TF_WORKSPACE }}$"; then
             terraform workspace new ${{ env.TF_WORKSPACE }}
+          else
+            terraform workspace select ${{ env.TF_WORKSPACE }}
           fi
-          unset TF_WORKSPACE
-          terraform workspace select ${{ env.TF_WORKSPACE }}
+        env:
+          TF_WORKSPACE: ${{ env.TF_WORKSPACE }}
+    
       
           
     
