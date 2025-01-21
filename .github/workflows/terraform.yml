@@ -38,37 +38,44 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.7
-      
-          # Authenticate with Azure using the service principal credentials
+
       - name: Configure Azure Credentials
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
           enable-AzPSSession: true
-          allow-no-subscriptions: false
-          audience: api://AzureADTokenExchange
-          auth-type: SERVICE_PRINCIPAL
-          environment: azurecloud
 
       - name: Initialize Terraform
         run: |
           terraform init \
               -backend-config="resource_group_name=${{ env.TF_RESOURCE_GROUP }}" \
               -backend-config="storage_account_name=${{ env.TF_STORAGE_ACCOUNT }}" \
-              -backend-config="container_name=${{ env.TF_CONTAINER_NAME }}" \
+              -backend-config="container_name=${{ matrix.environment }}.${{ env.TF_CONTAINER_NAME }}" \
               -backend-config="key=${{ matrix.environment }}.tfstate" \
               -backend-config="access_key=${{ env.TF_ACCESS_KEY }}"
 
       - name: Validate Terraform
         run: terraform validate
 
+      - name: Verify Terraform State File
+        run: |
+          terraform show -json > statefile.json
+          ENVIRONMENT=$(jq -r '.values.outputs.environment.value' statefile.json)
+          if [ "$ENVIRONMENT" != "${{ matrix.environment }}" ]; then
+            echo "Error: State file environment ($ENVIRONMENT) does not match (${ matrix.environment })."
+            exit 1
+          fi
+
       - name: Plan Terraform
-        run: terraform plan -out=${{ matrix.environment }}.tfplan -var-file="${{ matrix.environment }}.terraform.tfvars" -lock=false
+        run: terraform plan -out=${{ matrix.environment }}.tfplan -var-file="${{ matrix.environment }}.terraform.tfvars"
         env:
           TF_WORKSPACE: ${{ matrix.environment }}
 
-      - name: Apply Terraform (Manual Approval)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: terraform apply  ${{ matrix.environment }}.tfplan -lock=false
-        env:
-          TF_WORKSPACE: ${{ matrix.environment }}
+      - name: Manual Approval for Non-Production
+        if: github.event_name == 'push' && matrix.environment != 'production'
+        uses: hmarr/auto-approve-action@v2
+      
+
+      - name: Apply Terraform
+        if: github.event_name == 'push'
+        run: terraform apply ${{ matrix.environment }}.tfplan
