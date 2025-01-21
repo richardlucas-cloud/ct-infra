@@ -63,10 +63,13 @@ jobs:
         run: |
           terraform show -json > statefile.json
           ENVIRONMENT=$(jq -r '.values.outputs.environment.value' statefile.json)
-          if [ "$ENVIRONMENT" != "${{ matrix.environment }}" ]; then
-            echo "Error: State file environment ($ENVIRONMENT) does not match (${ matrix.environment })."
+          if [ "$ENVIRONMENT" != "$EXPECTED_ENVIRONMENT" ]; then
+            echo "Error: State file environment ($ENVIRONMENT) does not match ($EXPECTED_ENVIRONMENT)."
             exit 1
           fi
+        env:
+          EXPECTED_ENVIRONMENT: ${{ matrix.environment }}
+  
 
       - name: Manual Approval for Non-Production
         if: github.event_name == 'push' && matrix.environment != 'production'
