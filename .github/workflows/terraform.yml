@@ -54,6 +54,11 @@ jobs:
       - name: Validate Terraform
         run: terraform validate
 
+      - name: Plan Terraform
+        run: terraform plan -out=${{ matrix.environment }}.tfplan -var-file="${{ matrix.environment }}.terraform.tfvars"
+        env:
+          TF_WORKSPACE: ${{ matrix.environment }}
+      
       - name: Verify Terraform State File
         run: |
           terraform show -json > statefile.json
@@ -62,11 +67,6 @@ jobs:
             echo "Error: State file environment ($ENVIRONMENT) does not match (${ matrix.environment })."
             exit 1
           fi
-
-      - name: Plan Terraform
-        run: terraform plan -out=${{ matrix.environment }}.tfplan -var-file="${{ matrix.environment }}.terraform.tfvars"
-        env:
-          TF_WORKSPACE: ${{ matrix.environment }}
 
       - name: Manual Approval for Non-Production
         if: github.event_name == 'push' && matrix.environment != 'production'
