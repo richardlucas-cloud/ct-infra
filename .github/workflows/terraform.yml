@@ -79,6 +79,5 @@ jobs:
           
           
       - name: Apply Terraform
-        if: github.ref == 'refs/heads/main' && matrix.environment == 'production'
         run: terraform apply -auto-approve ${{ matrix.environment }}.tfplan
           
